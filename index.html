@@ -20,12 +20,17 @@
 </head>
 <body>
 
+    <canvas id="main-view"></canvas>
+    
+    <div class="scanlines"></div>
+
+    <div id="click-hint" style="display: none;">
+        <p>[ TAP TO ENTER THE VOID ]</p>
+    </div>
+
     <div id="ui-layer" style="display: none;">
         <div id="track-info">
-            <h1 id="now-playing">INITIALIZING NEURAL LINK...</h1>
-            <div class="visualizer-bars">
-                <span></span><span></span><span></span><span></span>
-            </div>
+            <h1 id="now-playing">INITIALIZING...</h1>
         </div>
 
         <div id="playback-controls">
@@ -35,13 +40,6 @@
             </div>
         </div>
     </div>
-
-    <div id="click-hint" style="display: none;">
-        <p>[ TAP TO ENTER THE VOID ]</p>
-    </div>
-
-    <canvas id="main-view"></canvas>
-    <div class="scanlines"></div>
 
     <div style="display: none;">
         <audio id="audio-1" src="Lounge (1).mp3" crossorigin="anonymous"></audio>
