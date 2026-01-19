@@ -1,8 +1,3 @@
-/**
- * NEURAL LOUNGE // MAX POTENTIAL V3.0
- * VIBRANT NEON & HIGH-READABILITY MORPH
- */
-
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -12,7 +7,7 @@ let scene, camera, renderer, particleSystem, analyzer, clock;
 let isExploded = false;
 let currentTrackIndex = 1;
 
-// --- ENHANCED SHADERS ---
+// --- VIBRANT NEON SHADERS ---
 const vertexShader = `
     uniform float uTime;
     uniform float uExplode;
@@ -20,28 +15,26 @@ const vertexShader = `
     attribute vec3 aVelocity;
     attribute float aSize;
     varying vec3 vColor;
-    varying float vDistance;
 
     void main() {
         vColor = color;
         vec3 pos = position;
         
         // EXPLOSION MATH
-        // We use an exponential curve so the explosion starts fast and slows down
         float explosionStrength = pow(uExplode, 1.5);
-        pos += aVelocity * explosionStrength * 800.0;
+        pos += aVelocity * explosionStrength * 850.0;
         
-        // VIBRANT JITTER (Reacts to Audio Bass)
-        if (uExplode > 0.1) {
-            pos.x += sin(uTime * 15.0 + pos.y) * uAudio * 12.0;
-            pos.y += cos(uTime * 15.0 + pos.x) * uAudio * 12.0;
+        // BASS JITTER
+        if (uExplode > 0.05) {
+            pos.x += sin(uTime * 15.0 + pos.y) * uAudio * 10.0;
+            pos.y += cos(uTime * 15.0 + pos.x) * uAudio * 10.0;
         }
 
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
         
-        // Particle size increases slightly with audio for "flash" effect
-        float sizePulse = 1.0 + (uAudio * 0.5);
-        gl_PointSize = (aSize * sizePulse) * (450.0 / -mvPosition.z);
+        // FLASHY SIZE PULSE
+        float pSize = aSize * (1.0 + uAudio * 0.7);
+        gl_PointSize = pSize * (450.0 / -mvPosition.z);
         gl_Position = projectionMatrix * mvPosition;
     }
 `;
@@ -54,29 +47,22 @@ const fragmentShader = `
         float d = distance(gl_PointCoord, vec2(0.5));
         if (d > 0.5) discard;
 
-        // NEON BOOST: We multiply color by a brightness factor
-        // This creates a "glow" effect when combined with AdditiveBlending
-        float brightness = 1.5 + (uAudio * 3.0);
-        vec3 neonColor = vColor * brightness;
+        // BRIGHTNESS OVERDRIVE
+        float glow = 1.3 + (uAudio * 3.5);
+        vec3 finalColor = vColor * glow;
 
-        // Soft edges for a "light-bulb" feel
         float alpha = smoothstep(0.5, 0.1, d);
-        gl_FragColor = vec4(neonColor, alpha);
+        gl_FragColor = vec4(finalColor, alpha);
     }
 `;
 
 async function init() {
     scene = new THREE.Scene();
     clock = new THREE.Clock();
-    
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
-    camera.position.z = 600; // Moved back slightly for better text framing
+    camera.position.z = 550;
 
-    renderer = new THREE.WebGLRenderer({ 
-        canvas: document.getElementById('main-view'), 
-        antialias: true, 
-        alpha: true 
-    });
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('main-view'), antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -91,20 +77,18 @@ function loadParticles() {
             font: font,
             size: 70,
             height: 2,
-            curveSegments: 20 // Smoother curves for better readability
+            curveSegments: 25 
         });
         textGeo.center();
 
-        // Increased count to 50,000 for "Solid Text" look
-        const count = 50000;
+        const count = 55000; 
         const positions = new Float32Array(count * 3);
         const velocities = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
         const sizes = new Float32Array(count);
 
-        // VIBRANT PALETTE: High-saturation Purple (#BC00FF)
-        const purple = new THREE.Color(0xbc00ff);
-        const blue = new THREE.Color(0x00f2ff);
+        const colorPurple = new THREE.Color(0xbc00ff); 
+        const colorBlue = new THREE.Color(0x00f2ff); 
         
         const sampler = textGeo.attributes.position;
 
@@ -116,16 +100,14 @@ function loadParticles() {
             positions[i3+1] = sampler.getY(randomIdx);
             positions[i3+2] = sampler.getZ(randomIdx);
 
-            // Outward velocity for explosion
             velocities[i3] = (Math.random() - 0.5) * 4;
             velocities[i3+1] = (Math.random() - 0.5) * 4;
             velocities[i3+2] = (Math.random() - 0.5) * 4;
 
-            // Mix purple and blue for a "gradient neon" vibe
-            const mixedColor = purple.clone().lerp(blue, Math.random() * 0.3);
-            colors[i3] = mixedColor.r;
-            colors[i3+1] = mixedColor.g;
-            colors[i3+2] = mixedColor.b;
+            const mix = colorPurple.clone().lerp(colorBlue, Math.random() * 0.5);
+            colors[i3] = mix.r;
+            colors[i3+1] = mix.g;
+            colors[i3+2] = mix.b;
 
             sizes[i] = Math.random() * 2.0 + 1.0;
         }
@@ -146,7 +128,7 @@ function loadParticles() {
             fragmentShader,
             transparent: true,
             blending: THREE.AdditiveBlending,
-            depthWrite: false, // Prevents particles from "cutting" each other
+            depthWrite: false,
             vertexColors: true
         });
 
@@ -167,9 +149,9 @@ function startShow() {
     analyzer = audioCtx.createAnalyser();
     source.connect(analyzer);
     analyzer.connect(audioCtx.destination);
+    audioCtx.resume();
     audio.play();
 
-    // EXPLOSION GSAP
     gsap.to(particleSystem.material.uniforms.uExplode, {
         value: 1,
         duration: 2.5,
@@ -177,7 +159,20 @@ function startShow() {
     });
 
     document.getElementById('ui-layer').style.display = 'flex';
+    document.getElementById('track-name').innerText = `SYSTEM_ACTIVE // STREAMING_0${currentTrackIndex}`;
 }
+
+window.switchTrack = function() {
+    const oldAudio = document.getElementById(`audio-${currentTrackIndex}`);
+    oldAudio.pause();
+    oldAudio.currentTime = 0;
+
+    currentTrackIndex = currentTrackIndex >= 3 ? 1 : currentTrackIndex + 1;
+    
+    const newAudio = document.getElementById(`audio-${currentTrackIndex}`);
+    newAudio.play();
+    document.getElementById('track-name').innerText = `SYSTEM_ACTIVE // STREAMING_0${currentTrackIndex}`;
+};
 
 function animate() {
     requestAnimationFrame(animate);
@@ -185,16 +180,13 @@ function animate() {
 
     if (particleSystem) {
         particleSystem.material.uniforms.uTime.value = time;
-        
         if (analyzer) {
             const data = new Uint8Array(analyzer.frequencyBinCount);
             analyzer.getByteFrequencyData(data);
             const avg = data.reduce((a, b) => a + b) / data.length;
-            // Map the average frequency to a 0.0 - 1.0 range for the shader
-            particleSystem.material.uniforms.uAudio.value = avg / 35.0;
+            particleSystem.material.uniforms.uAudio.value = avg / 30.0;
         }
     }
-
     renderer.render(scene, camera);
 }
 
