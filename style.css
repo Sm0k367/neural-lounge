@@ -1,5 +1,5 @@
 /**
- * AI LOUNGE // AFTER DARK V7.0
+ * AI LOUNGE // AFTER DARK V8.0
  * DJ CLUB HUD & ATMOSPHERICS
  */
 
@@ -25,11 +25,21 @@ body {
     position: fixed; 
     inset: 0; 
     z-index: 1; 
-    /* This makes the neon rings look like they are glowing intensely */
-    filter: saturate(1.5) brightness(1.2);
+    /* High-end club lighting filter */
+    filter: saturate(1.8) brightness(1.1) contrast(1.1);
 }
 
-/* --- CENTERED START PROMPT --- */
+/* --- OVERLAY BLOOM --- */
+.scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(188, 0, 255, 0.05), transparent);
+    mix-blend-mode: screen;
+}
+
+/* --- CLICK HINT --- */
 #click-hint {
     position: fixed;
     top: 50%;
@@ -43,18 +53,18 @@ body {
 #click-hint p {
     font-family: 'Syncopate', sans-serif;
     font-size: 1.2rem;
-    letter-spacing: 15px;
+    letter-spacing: 12px;
     color: var(--neon-blue);
-    text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-purple);
-    animation: neonPulse 1.5s infinite alternate;
+    text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-purple);
+    animation: strobe 1.5s infinite ease-in-out;
 }
 
-@keyframes neonPulse {
-    from { opacity: 0.5; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1.05); }
+@keyframes strobe {
+    0%, 100% { opacity: 0.4; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1.05); }
 }
 
-/* --- HUD INTERFACE --- */
+/* --- HUD --- */
 #ui-layer {
     position: fixed;
     inset: 0;
@@ -68,37 +78,31 @@ body {
 
 #track-info h1 {
     font-family: 'Syncopate', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1rem;
     letter-spacing: 5px;
     color: #fff;
     text-shadow: 0 0 10px var(--neon-purple);
 }
 
-#visualizer-mode {
-    font-size: 0.8rem;
-    color: var(--neon-blue);
-    margin-top: 10px;
-}
-
-/* --- DJ CONTROLS --- */
+/* --- CONTROLS --- */
 #playback-controls {
     pointer-events: auto;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 20px 40px;
     display: flex;
     align-items: center;
     gap: 30px;
     width: 100%;
-    max-width: 800px;
-    border-radius: 5px;
+    max-width: 700px;
 }
 
 .progress-wrapper {
     flex-grow: 1;
     height: 4px;
     background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
 }
 
 #progress-line {
@@ -109,28 +113,18 @@ body {
 }
 
 #skip-btn {
-    background: var(--neon-blue);
-    border: none;
-    color: #000;
-    padding: 12px 25px;
-    font-weight: bold;
+    background: none;
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    padding: 10px 20px;
     font-family: 'Syncopate';
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.2s;
 }
 
 #skip-btn:hover {
-    background: var(--neon-purple);
-    color: #fff;
-    box-shadow: 0 0 20px var(--neon-purple);
-}
-
-/* --- SMOKE/GLARE OVERLAY --- */
-.scanlines {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    pointer-events: none;
-    background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.4));
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-blue);
 }
