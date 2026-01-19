@@ -21,30 +21,30 @@
 <body>
 
     <canvas id="main-view"></canvas>
-    
     <div class="scanlines"></div>
-
-    <div id="click-hint" style="display: none;">
-        <p>[ TAP TO ENTER THE VOID ]</p>
-    </div>
 
     <div id="ui-layer" style="display: none;">
         <div id="track-info">
-            <h1 id="now-playing">INITIALIZING...</h1>
+            <h1 id="now-playing">LINKING NEURAL PATHWAYS...</h1>
+            <p id="visualizer-mode">MODE: NULL</p>
         </div>
 
         <div id="playback-controls">
-            <button id="skip-btn" onclick="window.switchTrack()">NEXT_VIBE</button>
+            <button id="skip-btn" onclick="window.switchTrack()">EVOLVE_VIBE</button>
             <div class="progress-wrapper">
                 <div id="progress-line"></div>
             </div>
         </div>
     </div>
 
+    <div id="click-hint" style="display: none;">
+        <p>[ ACCESS THE AFTER DARK ]</p>
+    </div>
+
     <div style="display: none;">
-        <audio id="audio-1" src="Lounge (1).mp3" crossorigin="anonymous"></audio>
-        <audio id="audio-2" src="The OS of Funk.mp3" crossorigin="anonymous"></audio>
-        <audio id="audio-3" src="Go Hard (We Funk).mp3" crossorigin="anonymous"></audio>
+        <audio id="audio-1" src="Lounge (1).mp3" crossorigin="anonymous" loop></audio>
+        <audio id="audio-2" src="The OS of Funk.mp3" crossorigin="anonymous" loop></audio>
+        <audio id="audio-3" src="Go Hard (We Funk).mp3" crossorigin="anonymous" loop></audio>
     </div>
 
     <script type="module" src="main.js"></script>
