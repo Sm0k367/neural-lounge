@@ -1,6 +1,6 @@
 /**
- * AI LOUNGE // AFTER DARK V4.0
- * CINEMATIC TRANSITIONS & UI
+ * AI LOUNGE // AFTER DARK V5.0
+ * MELLOW HUD & ATMOSPHERICS
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400&display=swap');
@@ -8,13 +8,13 @@
 :root {
     --neon-purple: #bc00ff;
     --neon-blue: #00f2ff;
-    --bg-black: #020202;
+    --deep-space: #010101;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background-color: var(--bg-black);
+    background-color: var(--deep-space);
     color: #fff;
     font-family: 'JetBrains Mono', monospace;
     overflow: hidden;
@@ -23,100 +23,105 @@ body {
 
 #main-view { position: fixed; inset: 0; z-index: 1; }
 
-/* --- CLICK HINT (Post-Intro) --- */
+/* --- CLICK HINT --- */
 #click-hint {
     position: fixed;
-    top: 70%;
+    top: 80%; /* Lowered to keep text readable */
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
-    text-align: center;
     pointer-events: none;
 }
 
 #click-hint p {
-    font-size: 0.8rem;
-    letter-spacing: 8px;
+    font-size: 0.7rem;
+    letter-spacing: 10px;
     color: var(--neon-blue);
-    text-shadow: 0 0 10px var(--neon-blue);
-    animation: pulseGlow 2s infinite ease-in-out;
+    opacity: 0.6;
+    animation: breathing 3s infinite ease-in-out;
 }
 
-@keyframes pulseGlow {
-    0%, 100% { opacity: 0.3; transform: scale(0.95); }
-    50% { opacity: 1; transform: scale(1.05); }
+@keyframes breathing {
+    0%, 100% { opacity: 0.2; letter-spacing: 8px; }
+    50% { opacity: 0.8; letter-spacing: 12px; }
 }
 
-/* --- UI OVERLAY --- */
+/* --- HUD LAYER --- */
 #ui-layer {
     position: fixed;
     inset: 0;
     z-index: 100;
-    padding: 60px;
+    padding: 40px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     pointer-events: none;
+    background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%);
 }
 
 #track-info h1 {
     font-family: 'Syncopate', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 10px;
+    font-size: 0.9rem;
+    letter-spacing: 6px;
     color: var(--neon-purple);
-    text-shadow: 0 0 20px var(--neon-purple);
+    margin-bottom: 5px;
 }
 
-/* --- GLASS CONTROLS --- */
+#visualizer-mode {
+    font-size: 0.6rem;
+    color: var(--neon-blue);
+    letter-spacing: 3px;
+    opacity: 0.7;
+}
+
+/* --- MINIMALIST CONTROLS --- */
 #playback-controls {
     pointer-events: auto;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 30px;
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 30px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
-    gap: 40px;
-    max-width: 1000px;
+    gap: 30px;
+    width: fit-content;
 }
 
 .progress-wrapper {
-    flex-grow: 1;
-    height: 2px;
+    width: 200px;
+    height: 1px;
     background: rgba(255, 255, 255, 0.1);
 }
 
 #progress-line {
     width: 0%;
     height: 100%;
-    background: var(--neon-blue);
-    box-shadow: 0 0 15px var(--neon-blue);
+    background: var(--neon-purple);
+    box-shadow: 0 0 10px var(--neon-purple);
+    transition: width 0.1s linear;
 }
 
 #skip-btn {
     background: none;
-    border: 1px solid var(--neon-blue);
-    color: var(--neon-blue);
-    padding: 10px 30px;
-    cursor: pointer;
+    border: none;
+    color: #fff;
     font-family: 'JetBrains Mono';
-    transition: 0.4s;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-decoration: underline;
+    opacity: 0.6;
 }
 
-#skip-btn:hover {
-    background: var(--neon-blue);
-    color: #000;
-    box-shadow: 0 0 30px var(--neon-blue);
-}
+#skip-btn:hover { opacity: 1; color: var(--neon-blue); }
 
-/* --- SCANLINE FILTER --- */
 .scanlines {
     position: fixed;
     inset: 0;
     z-index: 200;
     pointer-events: none;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-    background-size: 100% 4px;
-    opacity: 0.2;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 2px;
+    opacity: 0.1;
 }
