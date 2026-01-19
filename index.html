@@ -6,18 +6,25 @@
     <title>NEURAL LOUNGE // MAX POTENTIAL</title>
     <link rel="stylesheet" href="style.css">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/FontLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/geometries/TextGeometry.js"></script>
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+          "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.2/index.js"
+        }
+      }
+    </script>
 </head>
 <body>
 
     <div id="ui-layer" style="display: none;">
         <div id="playback-controls">
-            <button id="skip-btn" onclick="switchTrack()">NEXT_STREAM</button>
+            <button id="skip-btn" onclick="window.switchTrack()">NEXT_STREAM</button>
             <div class="status-bar">
-                <span id="track-name">LOUNGE (1)</span>
+                <span id="track-name">SYSTEM: ONLINE</span>
                 <div id="progress-line"></div>
             </div>
         </div>
@@ -31,6 +38,6 @@
         <audio id="audio-3" src="Go Hard (We Funk).mp3" crossorigin="anonymous"></audio>
     </div>
 
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
