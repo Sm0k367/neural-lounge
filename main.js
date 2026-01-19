@@ -1,33 +1,35 @@
 /**
- * NEURAL LOUNGE // MAX POTENTIAL V1.0
- * SHADER-BASED PARTICLE EXPLOSION & AUDIO MORPH
+ * NEURAL LOUNGE // MAX POTENTIAL V2.0
+ * MODULE-BASED PARTICLE SYSTEM & AUDIO SYNC
  */
+
+import * as THREE from 'three';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import gsap from 'gsap';
 
 let scene, camera, renderer, particleSystem, analyzer, clock;
 let isExploded = false;
-let currentTrack = 1;
+let currentTrackIndex = 1;
 
-// --- SHADER SOURCE: VERTEX ---
-const _VS = `
+// --- SHADERS ---
+const vertexShader = `
     uniform float uTime;
     uniform float uExplode;
-    uniform float uAudioFreq;
-    attribute float aSize;
+    uniform float uAudio;
     attribute vec3 aVelocity;
+    attribute float aSize;
     varying vec3 vColor;
-
     void main() {
-        vColor = customColor;
+        vColor = color;
         vec3 pos = position;
-
-        // The Explosion Logic
-        // Move particles outward based on uExplode progress and their unique velocity
-        pos += aVelocity * uExplode * 500.0;
-
-        // The Audio Ripple
-        // Small vibration based on frequency data
-        pos.x += sin(uTime * 10.0 + pos.y) * uAudioFreq * 2.0;
-        pos.y += cos(uTime * 10.0 + pos.x) * uAudioFreq * 2.0;
+        
+        // EXPLOSION LOGIC
+        pos += aVelocity * uExplode * 600.0;
+        
+        // AUDIO VIBRATION
+        pos.x += sin(uTime * 10.0 + pos.y) * uAudio * 5.0;
+        pos.y += cos(uTime * 10.0 + pos.z) * uAudio * 5.0;
 
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
         gl_PointSize = aSize * (300.0 / -mvPosition.z);
@@ -35,127 +37,132 @@ const _VS = `
     }
 `;
 
-// --- SHADER SOURCE: FRAGMENT ---
-const _FS = `
+const fragmentShader = `
     varying vec3 vColor;
     void main() {
-        // Create a soft circular particle
         float d = distance(gl_PointCoord, vec2(0.5));
         if (d > 0.5) discard;
         gl_FragColor = vec4(vColor, 1.0 - (d * 2.0));
     }
 `;
 
-async function initExperience() {
-    setupScene();
-    await createTextParticles("NEURAL LOUNGE");
+// --- INITIALIZATION ---
+async function init() {
+    scene = new THREE.Scene();
+    clock = new THREE.Clock();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.z = 500;
+
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('main-view'), antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    loadParticles();
     animate();
 }
 
-function setupScene() {
-    scene = new THREE.Scene();
-    clock = new THREE.Clock();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 5000);
-    camera.position.z = 600;
-
-    renderer = new THREE.WebGLRenderer({ 
-        canvas: document.getElementById('main-view'), 
-        antialias: true, 
-        alpha: true 
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-}
-
-async function createTextParticles(text) {
-    const loader = new THREE.FontLoader();
-    // Using a standard Three.js font JSON
+function loadParticles() {
+    const loader = new FontLoader();
+    // Loading from the official Three.js font hosting
     loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', (font) => {
-        const geometry = new THREE.TextGeometry(text, {
+        const textGeo = new TextGeometry('NEURAL LOUNGE', {
             font: font,
-            size: 80,
+            size: 60,
             height: 5,
             curveSegments: 12
         });
-        geometry.center();
+        textGeo.center();
 
-        // Convert solid geometry into a Point Cloud
-        const count = 25000;
-        const posAttr = geometry.attributes.position;
+        const count = 30000;
         const positions = new Float32Array(count * 3);
         const velocities = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
         const sizes = new Float32Array(count);
 
-        const color = new THREE.Color(0xbc00ff);
+        const coreColor = new THREE.Color(0xbc00ff);
+        const sampler = textGeo.attributes.position;
 
         for (let i = 0; i < count; i++) {
-            // Pick a random point from the original text geometry
-            const idx = Math.floor(Math.random() * posAttr.count);
-            positions[i*3] = posAttr.getX(idx);
-            positions[i*3+1] = posAttr.getY(idx);
-            positions[i*3+2] = posAttr.getZ(idx);
+            const i3 = i * 3;
+            const randomIdx = Math.floor(Math.random() * sampler.count);
+            
+            positions[i3] = sampler.getX(randomIdx);
+            positions[i3+1] = sampler.getY(randomIdx);
+            positions[i3+2] = sampler.getZ(randomIdx);
 
-            // Random direction for explosion
-            velocities[i*3] = (Math.random() - 0.5) * 2;
-            velocities[i*3+1] = (Math.random() - 0.5) * 2;
-            velocities[i*3+2] = (Math.random() - 0.5) * 2;
+            velocities[i3] = (Math.random() - 0.5) * 3;
+            velocities[i3+1] = (Math.random() - 0.5) * 3;
+            velocities[i3+2] = (Math.random() - 0.5) * 3;
 
-            colors[i*3] = color.r;
-            colors[i*3+1] = color.g;
-            colors[i*3+2] = color.b;
+            colors[i3] = coreColor.r;
+            colors[i3+1] = coreColor.g;
+            colors[i3+2] = coreColor.b;
 
-            sizes[i] = Math.random() * 2 + 1;
+            sizes[i] = Math.random() * 1.5 + 0.5;
         }
 
-        const pGeo = new THREE.BufferGeometry();
-        pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        pGeo.setAttribute('aVelocity', new THREE.BufferAttribute(velocities, 3));
-        pGeo.setAttribute('customColor', new THREE.BufferAttribute(colors, 3));
-        pGeo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('aVelocity', new THREE.BufferAttribute(velocities, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
 
-        const pMat = new THREE.ShaderMaterial({
+        const mat = new THREE.ShaderMaterial({
             uniforms: {
                 uTime: { value: 0 },
                 uExplode: { value: 0 },
-                uAudioFreq: { value: 0 }
+                uAudio: { value: 0 }
             },
-            vertexShader: _VS,
-            fragmentShader: _FS,
+            vertexShader,
+            fragmentShader,
             transparent: true,
-            blending: THREE.AdditiveBlending
+            blending: THREE.AdditiveBlending,
+            vertexColors: true
         });
 
-        particleSystem = new THREE.Points(pGeo, pMat);
+        particleSystem = new THREE.Points(geo, mat);
         scene.add(particleSystem);
 
-        // Click to explode
-        window.addEventListener('click', triggerExplosion);
+        window.addEventListener('mousedown', startShow);
     });
 }
 
-function triggerExplosion() {
+function startShow() {
     if (isExploded) return;
     isExploded = true;
 
-    // Start Audio
-    const audio = document.getElementById('audio-1');
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const source = ctx.createMediaElementSource(audio);
-    analyzer = ctx.createAnalyser();
+    // Trigger Audio
+    const audio = document.getElementById(`audio-${currentTrackIndex}`);
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaElementSource(audio);
+    analyzer = audioCtx.createAnalyser();
     source.connect(analyzer);
-    analyzer.connect(ctx.destination);
+    analyzer.connect(audioCtx.destination);
     audio.play();
 
-    // Visual Explosion Animation
+    // GSAP Explosion
     gsap.to(particleSystem.material.uniforms.uExplode, {
         value: 1,
-        duration: 2,
-        ease: "expo.out"
+        duration: 3,
+        ease: "power4.out"
     });
 
     document.getElementById('ui-layer').style.display = 'flex';
+    document.getElementById('track-name').innerText = `NOW STREAMING: TRACK ${currentTrackIndex}`;
 }
+
+// Ensure the switchTrack is global for the button
+window.switchTrack = function() {
+    const oldAudio = document.getElementById(`audio-${currentTrackIndex}`);
+    oldAudio.pause();
+    oldAudio.currentTime = 0;
+
+    currentTrackIndex = currentTrackIndex >= 3 ? 1 : currentTrackIndex + 1;
+    
+    const newAudio = document.getElementById(`audio-${currentTrackIndex}`);
+    newAudio.play();
+    document.getElementById('track-name').innerText = `NOW STREAMING: TRACK ${currentTrackIndex}`;
+};
 
 function animate() {
     requestAnimationFrame(animate);
@@ -168,12 +175,11 @@ function animate() {
             const data = new Uint8Array(analyzer.frequencyBinCount);
             analyzer.getByteFrequencyData(data);
             const avg = data.reduce((a, b) => a + b) / data.length;
-            particleSystem.material.uniforms.uAudioFreq.value = avg / 10.0;
+            particleSystem.material.uniforms.uAudio.value = avg / 20.0;
         }
     }
 
     renderer.render(scene, camera);
 }
 
-// Ensure the initial call is made
-initExperience();
+init();
