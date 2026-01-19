@@ -1,6 +1,6 @@
 /**
- * NEURAL LOUNGE // AFTER DARK
- * ATMOSPHERICS & UI
+ * AI LOUNGE // AFTER DARK V4.0
+ * CINEMATIC TRANSITIONS & UI
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400&display=swap');
@@ -8,30 +8,43 @@
 :root {
     --neon-purple: #bc00ff;
     --neon-blue: #00f2ff;
-    --glass: rgba(0, 0, 0, 0.7);
+    --bg-black: #020202;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background-color: #000;
+    background-color: var(--bg-black);
     color: #fff;
     font-family: 'JetBrains Mono', monospace;
     overflow: hidden;
     height: 100vh;
-    width: 100vw;
 }
 
-/* --- THE 3D STAGE --- */
-#main-view {
+#main-view { position: fixed; inset: 0; z-index: 1; }
+
+/* --- CLICK HINT (Post-Intro) --- */
+#click-hint {
     position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+    pointer-events: none;
+}
+
+#click-hint p {
+    font-size: 0.8rem;
+    letter-spacing: 8px;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.3; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.05); }
 }
 
 /* --- UI OVERLAY --- */
@@ -39,81 +52,71 @@ body {
     position: fixed;
     inset: 0;
     z-index: 100;
-    pointer-events: none; 
+    padding: 60px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    padding: 50px;
-    /* This creates the dark, atmospheric edges */
-    background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.9) 100%);
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+#track-info h1 {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 10px;
+    color: var(--neon-purple);
+    text-shadow: 0 0 20px var(--neon-purple);
 }
 
 /* --- GLASS CONTROLS --- */
 #playback-controls {
     pointer-events: auto;
-    background: var(--glass);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 25px 40px;
-    width: 100%;
-    max-width: 850px;
-    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 40px;
+    max-width: 1000px;
 }
 
-.status-bar {
+.progress-wrapper {
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-#track-name {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.65rem;
-    letter-spacing: 5px;
-    color: var(--neon-blue);
-    text-transform: uppercase;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 #progress-line {
     width: 0%;
-    height: 3px;
-    background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+    height: 100%;
+    background: var(--neon-blue);
     box-shadow: 0 0 15px var(--neon-blue);
 }
 
 #skip-btn {
-    background: transparent;
-    border: 1px solid var(--neon-purple);
-    color: var(--neon-purple);
-    padding: 12px 24px;
-    font-family: 'JetBrains Mono';
-    font-size: 0.8rem;
+    background: none;
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    padding: 10px 30px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-family: 'JetBrains Mono';
+    transition: 0.4s;
 }
 
 #skip-btn:hover {
-    background: var(--neon-purple);
+    background: var(--neon-blue);
     color: #000;
-    box-shadow: 0 0 30px var(--neon-purple);
+    box-shadow: 0 0 30px var(--neon-blue);
 }
 
-/* --- SCANLINES --- */
+/* --- SCANLINE FILTER --- */
 .scanlines {
     position: fixed;
     inset: 0;
-    z-index: 150;
+    z-index: 200;
     pointer-events: none;
-    background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%, 
-        rgba(0, 0, 0, 0.2) 50%
-    );
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
     background-size: 100% 4px;
     opacity: 0.2;
 }
