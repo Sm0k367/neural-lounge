@@ -19,18 +19,18 @@ const vertexShader = `
     void main() {
         vColor = color;
         
-        // INTERPOLATE between original text position and morphed audio state
+        // INTERPOLATE between current position and target
         vec3 pos = mix(position, aTarget, uMorph);
         
-        // ADD EXPLOSION & AUDIO JITTER
-        if(uMorph > 0.1) {
-            pos += aVelocity * uMorph * 200.0;
-            pos.x += sin(uTime * 10.0 + pos.y) * uAudio * 20.0;
-            pos.z += cos(uTime * 10.0 + pos.x) * uAudio * 20.0;
+        // EXPLOSION & BASS JITTER
+        if(uMorph > 0.05) {
+            pos += aVelocity * uMorph * 250.0;
+            pos.x += sin(uTime * 12.0 + pos.y) * uAudio * 25.0;
+            pos.z += cos(uTime * 12.0 + pos.x) * uAudio * 25.0;
         }
 
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-        gl_PointSize = (2.0 + uAudio * 5.0) * (300.0 / -mvPosition.z);
+        gl_PointSize = (2.5 + uAudio * 6.0) * (400.0 / -mvPosition.z);
         gl_Position = projectionMatrix * mvPosition;
     }
 `;
@@ -41,94 +41,101 @@ const fragmentShader = `
     void main() {
         float d = distance(gl_PointCoord, vec2(0.5));
         if (d > 0.5) discard;
-        vec3 glowColor = vColor * (1.5 + uAudio * 5.0);
-        gl_FragColor = vec4(glowColor, smoothstep(0.5, 0.2, d));
+        vec3 glowColor = vColor * (1.8 + uAudio * 6.0);
+        gl_FragColor = vec4(glowColor, smoothstep(0.5, 0.1, d));
     }
 `;
 
 async function init() {
     scene = new THREE.Scene();
     clock = new THREE.Clock();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
-    camera.position.z = 800;
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 1200; // Start further back for the "assemble" zoom
 
     renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('main-view'), antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    loadNeuralText();
+    await startNeuralAssembly();
     animate();
 }
 
-function loadNeuralText() {
+async function startNeuralAssembly() {
     const loader = new FontLoader();
-    loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', (font) => {
-        const textGeo = new TextGeometry('AI LOUNGE\nAFTER DARK', { font: font, size: 60, height: 2, curveSegments: 20 });
-        textGeo.center();
+    // Use the official Three.js font URL for reliability
+    const font = await loader.loadAsync('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json');
+    
+    const textGeo = new TextGeometry('AI LOUNGE\nAFTER DARK', { font: font, size: 65, height: 2, curveSegments: 25 });
+    textGeo.center();
 
-        const count = 60000;
-        const positions = new Float32Array(count * 3);
-        const targets = new Float32Array(count * 3);
-        const velocities = new Float32Array(count * 3);
-        const colors = new Float32Array(count * 3);
+    const count = 65000;
+    const positions = new Float32Array(count * 3);
+    const targets = new Float32Array(count * 3);
+    const velocities = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
 
-        const sampler = textGeo.attributes.position;
-        const p1 = new THREE.Color(0xbc00ff); // Purple
-        const p2 = new THREE.Color(0x00f2ff); // Blue
+    const sampler = textGeo.attributes.position;
+    const p1 = new THREE.Color(0xbc00ff); // Purple
+    const p2 = new THREE.Color(0x00f2ff); // Blue
 
-        for (let i = 0; i < count; i++) {
-            const i3 = i * 3;
-            const rIdx = Math.floor(Math.random() * sampler.count);
+    for (let i = 0; i < count; i++) {
+        const i3 = i * 3;
+        const rIdx = Math.floor(Math.random() * sampler.count);
 
-            // Starting scattered (The Dust)
-            positions[i3] = (Math.random() - 0.5) * 2000;
-            positions[i3+1] = (Math.random() - 0.5) * 2000;
-            positions[i3+2] = (Math.random() - 0.5) * 2000;
+        // INITIAL STATE: Scattered Dust in a massive 3D sphere
+        positions[i3] = (Math.random() - 0.5) * 3500;
+        positions[i3+1] = (Math.random() - 0.5) * 3500;
+        positions[i3+2] = (Math.random() - 0.5) * 3500;
 
-            // Target (The Text)
-            targets[i3] = sampler.getX(rIdx);
-            targets[i3+1] = sampler.getY(rIdx);
-            targets[i3+2] = sampler.getZ(rIdx);
+        // TARGET STATE: The Letters
+        targets[i3] = sampler.getX(rIdx);
+        targets[i3+1] = sampler.getY(rIdx);
+        targets[i3+2] = sampler.getZ(rIdx);
 
-            velocities[i3] = (Math.random() - 0.5) * 10;
-            velocities[i3+1] = (Math.random() - 0.5) * 10;
-            velocities[i3+2] = (Math.random() - 0.5) * 10;
+        // Explosion trajectory for later
+        velocities[i3] = (Math.random() - 0.5) * 12;
+        velocities[i3+1] = (Math.random() - 0.5) * 12;
+        velocities[i3+2] = (Math.random() - 0.5) * 12;
 
-            const c = p1.clone().lerp(p2, Math.random());
-            colors[i3] = c.r; colors[i3+1] = c.g; colors[i3+2] = c.b;
-        }
+        const c = p1.clone().lerp(p2, Math.random());
+        colors[i3] = c.r; colors[i3+1] = c.g; colors[i3+2] = c.b;
+    }
 
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('aTarget', new THREE.BufferAttribute(targets, 3));
-        geo.setAttribute('aVelocity', new THREE.BufferAttribute(velocities, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('aTarget', new THREE.BufferAttribute(targets, 3));
+    geo.setAttribute('aVelocity', new THREE.BufferAttribute(velocities, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-        const mat = new THREE.ShaderMaterial({
-            uniforms: { uTime: { value: 0 }, uMorph: { value: 0 }, uAudio: { value: 0 } },
-            vertexShader, fragmentShader, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, vertexColors: true
-        });
-
-        particleSystem = new THREE.Points(geo, mat);
-        scene.add(particleSystem);
-
-        // PHASE 1: ASSEMBLE TEXT
-        gsap.to(particleSystem.position, { z: 100, duration: 4, ease: "power2.out" });
-        // Reverse morph: fly from dust into targets
-        gsap.to(geo.attributes.position.array, {
-            endArray: targets,
-            duration: 3,
-            onUpdate: () => geo.attributes.position.needsUpdate = true,
-            onComplete: () => { document.getElementById('click-hint').style.display = 'block'; }
-        });
-
-        window.addEventListener('mousedown', enterLounge);
+    const mat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uMorph: { value: 0 }, uAudio: { value: 0 } },
+        vertexShader, fragmentShader, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, vertexColors: true
     });
+
+    particleSystem = new THREE.Points(geo, mat);
+    scene.add(particleSystem);
+
+    // --- ANIMATION SEQUENCE ---
+    const tl = gsap.timeline();
+    
+    // Zoom in while flying from dust to text
+    tl.to(camera.position, { z: 700, duration: 4, ease: "power2.inOut" });
+    tl.to(positions, {
+        endArray: targets,
+        duration: 4,
+        ease: "power3.inOut",
+        onUpdate: () => geo.attributes.position.needsUpdate = true,
+        onComplete: () => {
+            document.getElementById('click-hint').style.display = 'block';
+            window.addEventListener('mousedown', enterLounge);
+        }
+    }, 0);
 }
 
 function enterLounge() {
     if (isPlaying) return;
     isPlaying = true;
+    
     document.getElementById('click-hint').style.display = 'none';
     document.getElementById('ui-layer').style.display = 'flex';
 
@@ -138,19 +145,21 @@ function enterLounge() {
     analyzer = ctx.createAnalyser();
     source.connect(analyzer);
     analyzer.connect(ctx.destination);
+    ctx.resume();
     audio.play();
 
-    // PHASE 2: EXPLODE & MORPH
-    gsap.to(particleSystem.material.uniforms.uMorph, { value: 1, duration: 2, ease: "expo.out" });
-    document.getElementById('now-playing').innerText = "STREAMING: TRACK_01";
+    // Trigger Explosion Morph
+    gsap.to(particleSystem.material.uniforms.uMorph, { value: 1, duration: 3, ease: "expo.out" });
+    document.getElementById('now-playing').innerText = "SYSTEM_SYNC // TRACK_01";
 }
 
 window.switchTrack = function() {
     const old = document.getElementById(`audio-${currentTrack}`);
     old.pause(); old.currentTime = 0;
     currentTrack = currentTrack >= 3 ? 1 : currentTrack + 1;
-    document.getElementById(`audio-${currentTrack}`).play();
-    document.getElementById('now-playing').innerText = `STREAMING: TRACK_0${currentTrack}`;
+    const next = document.getElementById(`audio-${currentTrack}`);
+    next.play();
+    document.getElementById('now-playing').innerText = `SYSTEM_SYNC // TRACK_0${currentTrack}`;
 };
 
 function animate() {
@@ -162,10 +171,12 @@ function animate() {
             const data = new Uint8Array(analyzer.frequencyBinCount);
             analyzer.getByteFrequencyData(data);
             const avg = data.reduce((a, b) => a + b) / data.length;
-            particleSystem.material.uniforms.uAudio.value = avg / 25.0;
-            document.getElementById('progress-line').style.width = (avg*1.5) + "%"; // Visualizer bar
+            particleSystem.material.uniforms.uAudio.value = avg / 28.0;
+            // Link progress line to bass frequency for a flashy effect
+            document.getElementById('progress-line').style.width = Math.min(avg * 2, 100) + "%";
         }
     }
     renderer.render(scene, camera);
 }
+
 init();
