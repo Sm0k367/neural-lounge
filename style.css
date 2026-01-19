@@ -1,6 +1,6 @@
 /**
- * NEURAL LOUNGE // MAX POTENTIAL V1.0
- * ATMOSPHERIC STYLING & GLASS UI
+ * NEURAL LOUNGE // MAX POTENTIAL
+ * NEON STYLING & DEPTH
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400&display=swap');
@@ -8,8 +8,7 @@
 :root {
     --neon-purple: #bc00ff;
     --neon-blue: #00f2ff;
-    --glass-bg: rgba(0, 0, 0, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass: rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -22,103 +21,100 @@ body {
     background-color: #000;
     color: #fff;
     font-family: 'JetBrains Mono', monospace;
-    overflow: hidden; /* Prevent scrolling during the explosion */
+    overflow: hidden;
     height: 100vh;
     width: 100vw;
 }
 
-/* --- THE 3D CANVAS --- */
+/* --- THE 3D STAGE --- */
 #main-view {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1; /* Lowest layer */
-    display: block; /* Removes baseline spacing */
+    z-index: 1;
 }
 
-/* --- UI OVERLAY LAYER --- */
+/* --- UI OVERLAY --- */
 #ui-layer {
     position: fixed;
     inset: 0;
     z-index: 100;
-    pointer-events: none; /* Allows clicking "through" the UI to the 3D text */
+    pointer-events: none; 
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 60px;
-    background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+    padding: 50px;
+    /* Atmospheric vignette for depth */
+    background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 100%);
 }
 
-/* --- GLASSMORPHISM CONTROLS --- */
+/* --- GLASS CONTROLS --- */
 #playback-controls {
-    pointer-events: auto; /* Re-enable clicking for buttons */
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 25px 40px;
+    pointer-events: auto;
+    background: var(--glass);
+    backdrop-filter: blur(15px) saturate(150%);
+    -webkit-backdrop-filter: blur(15px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px 40px;
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     display: flex;
     align-items: center;
-    gap: 30px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    gap: 25px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
 }
 
 .status-bar {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 #track-name {
     font-family: 'Syncopate', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 4px;
+    font-size: 0.6rem;
+    letter-spacing: 5px;
     color: var(--neon-blue);
-    text-transform: uppercase;
+    text-shadow: 0 0 10px var(--neon-blue);
 }
 
 #progress-line {
     width: 0%;
     height: 2px;
     background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
-    box-shadow: 0 0 10px var(--neon-blue);
-    transition: width 0.1s linear;
+    box-shadow: 0 0 15px var(--neon-blue);
 }
 
 #skip-btn {
     background: transparent;
     border: 1px solid var(--neon-purple);
     color: var(--neon-purple);
-    padding: 12px 24px;
+    padding: 10px 20px;
     font-family: 'JetBrains Mono';
-    font-size: 0.8rem;
+    text-transform: uppercase;
     cursor: pointer;
-    border-radius: 4px;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: 0.3s;
 }
 
 #skip-btn:hover {
     background: var(--neon-purple);
     color: #000;
-    transform: scale(1.05);
     box-shadow: 0 0 20px var(--neon-purple);
 }
 
-/* --- ATMOSPHERIC SCANLINES --- */
-body::after {
-    content: " ";
+/* --- SCANLINE EFFECT --- */
+.scanlines {
     position: fixed;
     inset: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-    background-size: 100% 4px;
-    z-index: 200;
+    z-index: 150;
     pointer-events: none;
-    opacity: 0.2;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.1) 50%
+    );
+    background-size: 100% 4px;
+    opacity: 0.15;
 }
