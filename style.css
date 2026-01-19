@@ -1,0 +1,143 @@
+/**
+ * NEURAL LOUNGE // AFTER DARK V1.0
+ * CORE STYLES
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400&family=Bungee&display=swap');
+
+:root {
+    --purple: #bc00ff;
+    --blue: #00f2ff;
+    --gold: #ffcc00;
+    --bg-dark: #050505;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--bg-dark);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* --- THE ENTRY GATE --- */
+#gatekeeper {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: radial-gradient(circle at center, #1a0033 0%, #000 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.glow-ring {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 2px solid var(--blue);
+    border-radius: 50%;
+    box-shadow: 0 0 50px var(--blue), inset 0 0 50px var(--blue);
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+.glitch {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 10px;
+    color: #fff;
+    text-shadow: 2px 0 var(--purple), -2px 0 var(--blue);
+}
+
+/* --- 3D CANVAS --- */
+#canvas3d {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* --- UI OVERLAY --- */
+#ui-container {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px;
+}
+
+#lyric-stage {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#lyric-text {
+    font-size: clamp(1.5rem, 6vw, 4rem);
+    text-transform: uppercase;
+    transition: all 0.4s ease;
+}
+
+/* Track-specific lyric styles */
+.neon-glow { color: #fff; text-shadow: 0 0 20px var(--purple), 0 0 40px var(--purple); }
+.funk-style { font-family: 'Bungee', cursive; color: var(--gold); text-shadow: 4px 4px 0 #000; }
+
+/* --- CONTROLS --- */
+#playback-bar {
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 40px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.ctrl-btn {
+    background: none;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono';
+    font-size: 0.7rem;
+    transition: 0.3s;
+}
+
+.ctrl-btn:hover { background: var(--blue); color: #000; }
+
+.progress-container {
+    flex-grow: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--purple), var(--blue));
+    box-shadow: 0 0 10px var(--blue);
+}
