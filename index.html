@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL LOUNGE // AFTER DARK</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+    <div id="gatekeeper" onclick="initExperience()">
+        <div class="glow-ring"></div>
+        <div class="content">
+            <h1 class="glitch" data-text="NEURAL_LOUNGE">NEURAL_LOUNGE</h1>
+            <p>[ CLICK TO ENTER THE STREAM ]</p>
+        </div>
+    </div>
+
+    <div id="ui-container" style="display: none;">
+        <div id="lyric-stage">
+            <h2 id="lyric-text">INITIALIZING NEURAL LINK...</h2>
+        </div>
+
+        <div id="playback-bar">
+            <button id="play-pause-btn" class="ctrl-btn">PAUSE</button>
+            <div class="progress-container">
+                <div id="progress-fill"></div>
+            </div>
+            <button id="skip-btn" class="ctrl-btn" onclick="nextTrack()">SKIP >></button>
+        </div>
+    </div>
+
+    <canvas id="canvas3d"></canvas>
+
+    <div style="display: none;">
+        <audio id="audio-1" crossorigin="anonymous" src="Lounge (1).mp3"></audio>
+        <audio id="audio-2" crossorigin="anonymous" src="The OS of Funk.mp3"></audio>
+        <audio id="audio-3" crossorigin="anonymous" src="Go Hard (We Funk).mp3"></audio>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
