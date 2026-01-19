@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEURAL LOUNGE // AFTER DARK</title>
+    <title>AI LOUNGE // AFTER DARK</title>
     <link rel="stylesheet" href="style.css">
     
     <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
@@ -21,13 +21,23 @@
 <body>
 
     <div id="ui-layer" style="display: none;">
+        <div id="track-info">
+            <h1 id="now-playing">INITIALIZING NEURAL LINK...</h1>
+            <div class="visualizer-bars">
+                <span></span><span></span><span></span><span></span>
+            </div>
+        </div>
+
         <div id="playback-controls">
-            <button id="skip-btn" onclick="window.switchTrack()">NEXT_STREAM</button>
-            <div class="status-bar">
-                <span id="track-name">INITIALIZING...</span>
+            <button id="skip-btn" onclick="window.switchTrack()">NEXT_VIBE</button>
+            <div class="progress-wrapper">
                 <div id="progress-line"></div>
             </div>
         </div>
+    </div>
+
+    <div id="click-hint" style="display: none;">
+        <p>[ TAP TO ENTER THE VOID ]</p>
     </div>
 
     <canvas id="main-view"></canvas>
