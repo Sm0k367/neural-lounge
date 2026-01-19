@@ -1,6 +1,6 @@
 /**
- * AI LOUNGE // AFTER DARK V9.0
- * DJ CLUB HUD & ATMOSPHERICS
+ * AI LOUNGE // AFTER DARK V10.0
+ * COMPLETE LAYOUT & ATMOSPHERICS
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400&display=swap');
@@ -25,85 +25,86 @@ body {
     position: fixed; 
     inset: 0; 
     z-index: 1; 
-    /* Club lighting pop */
-    filter: saturate(1.8) brightness(1.2) contrast(1.1);
+    /* Toned down brightness for a deep tunnel feel */
+    filter: saturate(1.4) brightness(0.9) contrast(1.1);
 }
 
-/* --- CLICK HINT (STREAMS CLICKS THROUGH TO ENGINE) --- */
+/* --- THE "TAP" PROMPT (Positioned away from Logo) --- */
 #click-hint {
     position: fixed;
-    top: 50%;
+    bottom: 15%; /* Moved to bottom to avoid overlapping top logo */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     z-index: 100;
     text-align: center;
-    /* CRITICAL: Allows click to pass through to main.js */
     pointer-events: none; 
-    opacity: 0; /* Starts hidden until main.js is ready */
-    transition: opacity 0.5s ease;
+    opacity: 0; 
+    transition: opacity 1.5s ease;
 }
 
 #click-hint p {
     font-family: 'Syncopate', sans-serif;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     letter-spacing: 12px;
     color: var(--neon-blue);
-    text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-purple);
-    animation: strobe 1.5s infinite ease-in-out;
+    text-shadow: 0 0 10px var(--neon-blue);
+    animation: strobe 2s infinite ease-in-out;
 }
 
 @keyframes strobe {
-    0%, 100% { opacity: 0.4; transform: scale(0.98); }
-    50% { opacity: 1; transform: scale(1.05); }
+    0%, 100% { opacity: 0.3; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1.02); }
 }
 
-/* --- HUD INTERFACE --- */
+/* --- HUD & VIGNETTE --- */
 #ui-layer {
     position: fixed;
     inset: 0;
     z-index: 50;
-    padding: 40px;
+    padding: 60px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     pointer-events: none;
+    /* This makes the center of the tunnel pop by darkening the edges */
+    background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.6) 100%);
 }
 
 #track-info h1 {
     font-family: 'Syncopate', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 5px;
+    font-size: 0.9rem;
+    letter-spacing: 4px;
     color: #fff;
     text-shadow: 0 0 10px var(--neon-purple);
 }
 
 #visualizer-mode {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: var(--neon-blue);
-    margin-top: 5px;
-    letter-spacing: 2px;
+    margin-top: 8px;
+    letter-spacing: 3px;
+    opacity: 0.7;
 }
 
-/* --- DJ PLAYBACK CONTROLS --- */
+/* --- PLAYBACK HUD --- */
 #playback-controls {
     pointer-events: auto;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 20px 40px;
     display: flex;
     align-items: center;
     gap: 30px;
     width: 100%;
-    max-width: 700px;
-    border-radius: 4px;
+    max-width: 650px;
+    border-radius: 2px;
 }
 
 .progress-wrapper {
     flex-grow: 1;
-    height: 4px;
+    height: 2px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
     overflow: hidden;
 }
 
@@ -112,33 +113,41 @@ body {
     height: 100%;
     background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
     box-shadow: 0 0 15px var(--neon-blue);
-    transition: width 0.1s linear;
 }
 
 #skip-btn {
     background: none;
-    border: 1px solid var(--neon-blue);
+    border: 1px solid rgba(0, 242, 255, 0.5);
     color: var(--neon-blue);
-    padding: 10px 22px;
+    padding: 8px 18px;
     font-family: 'Syncopate';
     font-size: 0.6rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     letter-spacing: 2px;
 }
 
 #skip-btn:hover {
     background: var(--neon-blue);
     color: #000;
-    box-shadow: 0 0 25px var(--neon-blue);
+    box-shadow: 0 0 20px var(--neon-blue);
+    border-color: var(--neon-blue);
 }
 
-/* --- AMBIENT BLOOM OVERLAY --- */
+/* --- CRT SCANLINE EFFECT --- */
 .scanlines {
     position: fixed;
     inset: 0;
     z-index: 200;
     pointer-events: none;
-    background: radial-gradient(circle at center, rgba(188, 0, 255, 0.03), transparent);
-    mix-blend-mode: screen;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.1) 50%
+    ), linear-gradient(
+        90deg, 
+        rgba(255, 0, 0, 0.02), 
+        rgba(0, 255, 0, 0.01), 
+        rgba(0, 0, 255, 0.02)
+    );
+    background-size: 100% 3px, 3px 100%;
 }
