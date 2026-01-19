@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEURAL LOUNGE // MAX POTENTIAL</title>
+    <title>NEURAL LOUNGE // AFTER DARK</title>
     <link rel="stylesheet" href="style.css">
     
     <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
@@ -24,13 +24,14 @@
         <div id="playback-controls">
             <button id="skip-btn" onclick="window.switchTrack()">NEXT_STREAM</button>
             <div class="status-bar">
-                <span id="track-name">SYSTEM: ONLINE</span>
+                <span id="track-name">INITIALIZING...</span>
                 <div id="progress-line"></div>
             </div>
         </div>
     </div>
 
     <canvas id="main-view"></canvas>
+    <div class="scanlines"></div>
 
     <div style="display: none;">
         <audio id="audio-1" src="Lounge (1).mp3" crossorigin="anonymous"></audio>
