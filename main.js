@@ -59,7 +59,8 @@ async function init() {
         colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
         dummy.position.set(0, 0, i * -30);
         dummy.updateMatrix();
-        instancedMesh.setMatrix(i, dummy.matrix);
+        // FIXED: Changed setMatrix to setMatrixAt
+        instancedMesh.setMatrixAt(i, dummy.matrix);
     }
     ringGeo.setAttribute('color', new THREE.InstancedBufferAttribute(colors, 3));
     instancedMesh.visible = false;
@@ -74,9 +75,9 @@ async function init() {
         textMesh.name = "introText";
         scene.add(textMesh);
         
-        // ONLY ALLOW CLICK ONCE EVERYTHING IS READY
         isReady = true;
-        document.getElementById('click-hint').style.opacity = "1";
+        const hint = document.getElementById('click-hint');
+        if(hint) hint.style.opacity = "1";
     });
 
     window.addEventListener('pointerdown', handleStart);
@@ -86,7 +87,6 @@ async function init() {
 async function handleStart() {
     if (!isReady || isPlaying) return;
 
-    // MANDATORY: AudioContext must be first
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
 
@@ -104,8 +104,8 @@ async function handleStart() {
 
 function playTrack(index) {
     const audio = document.getElementById(`audio-${index}`);
-    
-    // Connect Analyzer
+    if (!audio) return;
+
     if (!analyzer) {
         const source = audioCtx.createMediaElementSource(audio);
         analyzer = audioCtx.createAnalyser();
@@ -114,13 +114,13 @@ function playTrack(index) {
         analyzer.connect(audioCtx.destination);
     }
     
-    audio.play();
+    audio.play().catch(e => console.error("Audio play blocked:", e));
     document.getElementById('now-playing').innerText = `DROP_ACTIVE // 0${index}`;
 }
 
 window.switchTrack = function() {
     const old = document.getElementById(`audio-${currentTrackIndex}`);
-    old.pause(); old.currentTime = 0;
+    if(old) { old.pause(); old.currentTime = 0; }
     currentTrackIndex = (currentTrackIndex % 3) + 1;
     playTrack(currentTrackIndex);
 };
@@ -137,7 +137,8 @@ function animate() {
             analyzer.getByteFrequencyData(data);
             level = (data.reduce((a, b) => a + b, 0) / data.length) / 45.0;
             instancedMesh.material.uniforms.uAudio.value = level;
-            document.getElementById('progress-line').style.width = (level * 250) + "%";
+            const progress = document.getElementById('progress-line');
+            if(progress) progress.style.width = (level * 250) + "%";
         }
 
         for (let i = 0; i < instancedMesh.count; i++) {
@@ -147,7 +148,8 @@ function animate() {
             dummy.rotation.z = time * 0.2 + (i * 0.03);
             dummy.scale.set(s, s, 1);
             dummy.updateMatrix();
-            instancedMesh.setMatrix(i, dummy.matrix);
+            // FIXED: Changed setMatrix to setMatrixAt
+            instancedMesh.setMatrixAt(i, dummy.matrix);
         }
         instancedMesh.instanceMatrix.needsUpdate = true;
     }
