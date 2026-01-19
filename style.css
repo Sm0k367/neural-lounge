@@ -1,5 +1,5 @@
 /**
- * AI LOUNGE // AFTER DARK V8.0
+ * AI LOUNGE // AFTER DARK V9.0
  * DJ CLUB HUD & ATMOSPHERICS
  */
 
@@ -25,21 +25,11 @@ body {
     position: fixed; 
     inset: 0; 
     z-index: 1; 
-    /* High-end club lighting filter */
-    filter: saturate(1.8) brightness(1.1) contrast(1.1);
+    /* Club lighting pop */
+    filter: saturate(1.8) brightness(1.2) contrast(1.1);
 }
 
-/* --- OVERLAY BLOOM --- */
-.scanlines {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    pointer-events: none;
-    background: radial-gradient(circle at center, rgba(188, 0, 255, 0.05), transparent);
-    mix-blend-mode: screen;
-}
-
-/* --- CLICK HINT --- */
+/* --- CLICK HINT (STREAMS CLICKS THROUGH TO ENGINE) --- */
 #click-hint {
     position: fixed;
     top: 50%;
@@ -47,7 +37,10 @@ body {
     transform: translate(-50%, -50%);
     z-index: 100;
     text-align: center;
-    cursor: pointer;
+    /* CRITICAL: Allows click to pass through to main.js */
+    pointer-events: none; 
+    opacity: 0; /* Starts hidden until main.js is ready */
+    transition: opacity 0.5s ease;
 }
 
 #click-hint p {
@@ -64,7 +57,7 @@ body {
     50% { opacity: 1; transform: scale(1.05); }
 }
 
-/* --- HUD --- */
+/* --- HUD INTERFACE --- */
 #ui-layer {
     position: fixed;
     inset: 0;
@@ -84,11 +77,18 @@ body {
     text-shadow: 0 0 10px var(--neon-purple);
 }
 
-/* --- CONTROLS --- */
+#visualizer-mode {
+    font-size: 0.8rem;
+    color: var(--neon-blue);
+    margin-top: 5px;
+    letter-spacing: 2px;
+}
+
+/* --- DJ PLAYBACK CONTROLS --- */
 #playback-controls {
     pointer-events: auto;
     background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 20px 40px;
     display: flex;
@@ -96,6 +96,7 @@ body {
     gap: 30px;
     width: 100%;
     max-width: 700px;
+    border-radius: 4px;
 }
 
 .progress-wrapper {
@@ -103,6 +104,7 @@ body {
     height: 4px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
+    overflow: hidden;
 }
 
 #progress-line {
@@ -110,21 +112,33 @@ body {
     height: 100%;
     background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
     box-shadow: 0 0 15px var(--neon-blue);
+    transition: width 0.1s linear;
 }
 
 #skip-btn {
     background: none;
     border: 1px solid var(--neon-blue);
     color: var(--neon-blue);
-    padding: 10px 20px;
+    padding: 10px 22px;
     font-family: 'Syncopate';
     font-size: 0.6rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    letter-spacing: 2px;
 }
 
 #skip-btn:hover {
     background: var(--neon-blue);
     color: #000;
-    box-shadow: 0 0 20px var(--neon-blue);
+    box-shadow: 0 0 25px var(--neon-blue);
+}
+
+/* --- AMBIENT BLOOM OVERLAY --- */
+.scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(188, 0, 255, 0.03), transparent);
+    mix-blend-mode: screen;
 }
