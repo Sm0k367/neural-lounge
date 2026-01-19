@@ -1,143 +1,124 @@
 /**
- * NEURAL LOUNGE // AFTER DARK V1.0
- * CORE STYLES
+ * NEURAL LOUNGE // MAX POTENTIAL V1.0
+ * ATMOSPHERIC STYLING & GLASS UI
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400&family=Bungee&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400&display=swap');
 
 :root {
-    --purple: #bc00ff;
-    --blue: #00f2ff;
-    --gold: #ffcc00;
-    --bg-dark: #050505;
+    --neon-purple: #bc00ff;
+    --neon-blue: #00f2ff;
+    --glass-bg: rgba(0, 0, 0, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-    background-color: var(--bg-dark);
+    background-color: #000;
     color: #fff;
     font-family: 'JetBrains Mono', monospace;
-    overflow: hidden;
+    overflow: hidden; /* Prevent scrolling during the explosion */
     height: 100vh;
+    width: 100vw;
 }
 
-/* --- THE ENTRY GATE --- */
-#gatekeeper {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: radial-gradient(circle at center, #1a0033 0%, #000 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.glow-ring {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    border: 2px solid var(--blue);
-    border-radius: 50%;
-    box-shadow: 0 0 50px var(--blue), inset 0 0 50px var(--blue);
-    animation: pulse 2s infinite ease-in-out;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.05); opacity: 1; }
-}
-
-.glitch {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 2.5rem;
-    letter-spacing: 10px;
-    color: #fff;
-    text-shadow: 2px 0 var(--purple), -2px 0 var(--blue);
-}
-
-/* --- 3D CANVAS --- */
-#canvas3d {
+/* --- THE 3D CANVAS --- */
+#main-view {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1; /* Lowest layer */
+    display: block; /* Removes baseline spacing */
 }
 
-/* --- UI OVERLAY --- */
-#ui-container {
+/* --- UI OVERLAY LAYER --- */
+#ui-layer {
     position: fixed;
     inset: 0;
     z-index: 100;
-    pointer-events: none;
+    pointer-events: none; /* Allows clicking "through" the UI to the 3D text */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 40px;
+    justify-content: flex-end;
+    padding: 60px;
+    background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6) 100%);
 }
 
-#lyric-stage {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-#lyric-text {
-    font-size: clamp(1.5rem, 6vw, 4rem);
-    text-transform: uppercase;
-    transition: all 0.4s ease;
-}
-
-/* Track-specific lyric styles */
-.neon-glow { color: #fff; text-shadow: 0 0 20px var(--purple), 0 0 40px var(--purple); }
-.funk-style { font-family: 'Bungee', cursive; color: var(--gold); text-shadow: 4px 4px 0 #000; }
-
-/* --- CONTROLS --- */
-#playback-bar {
-    pointer-events: auto;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 20px 40px;
-    border-radius: 100px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    width: 90%;
-    max-width: 900px;
+/* --- GLASSMORPHISM CONTROLS --- */
+#playback-controls {
+    pointer-events: auto; /* Re-enable clicking for buttons */
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 25px 40px;
+    width: 100%;
+    max-width: 800px;
     margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
 }
 
-.ctrl-btn {
-    background: none;
-    border: 1px solid var(--blue);
-    color: var(--blue);
-    padding: 10px 20px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-family: 'JetBrains Mono';
-    font-size: 0.7rem;
-    transition: 0.3s;
-}
-
-.ctrl-btn:hover { background: var(--blue); color: #000; }
-
-.progress-container {
+.status-bar {
     flex-grow: 1;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-#progress-fill {
-    height: 100%;
+#track-name {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+}
+
+#progress-line {
     width: 0%;
-    background: linear-gradient(90deg, var(--purple), var(--blue));
-    box-shadow: 0 0 10px var(--blue);
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+    box-shadow: 0 0 10px var(--neon-blue);
+    transition: width 0.1s linear;
+}
+
+#skip-btn {
+    background: transparent;
+    border: 1px solid var(--neon-purple);
+    color: var(--neon-purple);
+    padding: 12px 24px;
+    font-family: 'JetBrains Mono';
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#skip-btn:hover {
+    background: var(--neon-purple);
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--neon-purple);
+}
+
+/* --- ATMOSPHERIC SCANLINES --- */
+body::after {
+    content: " ";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 200;
+    pointer-events: none;
+    opacity: 0.2;
 }
